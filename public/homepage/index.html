@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sunday School Bible Stories</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="home-page">
+      <section class="storybook-banner" aria-label="Sunday school welcome banner">
+        <img
+          class="storybook-banner__image"
+          src="images/banner_header.png"
+          alt="Cartoon Sunday school Bible-times village with children listening to a teacher"
+        >
+      </section>
+
+      <section class="carousel-showcase" aria-label="Sunday school lesson carousels">
+        <div class="carousel-showcase__row carousel-showcase__row--realistic">
+          <div class="carousel-showcase__feature-artwork" aria-label="Featured lesson and resource previews">
+            <span class="carousel-showcase__feature-card carousel-showcase__feature-card--lessons">
+              <img class="carousel-showcase__feature-image" src="images/lessons.png" alt="Sunday school lesson preview">
+              <img class="carousel-showcase__feature-stamp" src="images/stamp.png" alt="Good for the whole church and all ages">
+            </span>
+            <img class="carousel-showcase__feature-image" src="images/features.png" alt="Sunday school feature highlights">
+          </div>
+
+          <div class="carousel-showcase__carousel-with-links">
+            <aside class="resource-rail" aria-label="Sunday school resources">
+              <button class="resource-rail__link" type="button" data-resource-modal-trigger data-resource-key="table-of-content">
+                Table of Contents
+              </button>
+              <button class="resource-rail__link" type="button" data-resource-modal-trigger data-resource-key="copyright">
+                Copyright Info
+              </button>
+              <button class="resource-rail__link" type="button" data-resource-modal-trigger data-resource-key="curriculum-notes">
+                Curriculum Notes
+              </button>
+            </aside>
+
+            <section
+              class="lesson-carousel lesson-carousel--realistic"
+              aria-labelledby="realistic-carousel-title"
+              data-lesson-carousel
+              data-carousel-image-set="realistic"
+              data-carousel-title="Realistic Image Previews"
+              data-carousel-eyebrow="Story images"
+              data-carousel-heading-id="realistic-carousel-title"
+              data-carousel-heading-level="h2"
+              data-carousel-label="Bible story realistic image carousel"
+            ></section>
+          </div>
+        </div>
+
+        <div class="carousel-showcase__row carousel-showcase__row--colored">
+          <section
+            class="lesson-carousel lesson-carousel--colored"
+            aria-labelledby="colored-carousel-title"
+            data-lesson-carousel
+            data-carousel-image-set="colored"
+            data-carousel-title="Colored Image Previews"
+            data-carousel-eyebrow="Colored story images"
+            data-carousel-heading-id="colored-carousel-title"
+            data-carousel-heading-level="h2"
+            data-carousel-label="Bible story colored image carousel"
+          ></section>
+        </div>
+      </section>
+
+      <section class="payment-package-section" aria-label="Complete lesson payment package">
+        <img class="payment-package-section__image" src="images/300.png" alt="Payment package for the complete Sunday school lesson">
+        <a class="payment-package-section__button" href="#" aria-label="I want to avail these lessons">
+          I Want to Avail These Lessons
+        </a>
+      </section>
+
+    </main>
+
+    <div class="resource-modal" hidden data-resource-modal>
+      <div class="resource-modal__backdrop" data-resource-modal-close></div>
+      <section class="resource-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="resource-modal-title">
+        <header class="resource-modal__header">
+          <h2 id="resource-modal-title" data-resource-modal-title>Resource</h2>
+          <button class="resource-modal__close" type="button" aria-label="Close resource PDF" data-resource-modal-close>&times;</button>
+        </header>
+        <iframe class="resource-modal__viewer" title="Resource PDF viewer" data-resource-modal-viewer></iframe>
+      </section>
+    </div>
+
+    <footer class="site-footer">
+      <p>Basic Bible Stories</p>
+      <p>Warm Sunday school lessons for curious kids and caring teachers.</p>
+    </footer>
+  </body>
+</html>

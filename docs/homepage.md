@@ -1,90 +1,103 @@
 # Overview
 
-The homepage introduces Basic Bible Stories with a warm cartoon Bible-age visual style for children and Sunday school teachers. It provides a single horizontal banner image, a focused five-item lesson carousel backed by 50 lesson selections, a lesson content section, and a footer.
+The homepage introduces Basic Bible Stories with a warm cartoon Bible-age visual style for children and Sunday school teachers. It is implemented as extractable static HTML, CSS, and JavaScript under `public/homepage`, so it can run without Ruby on Rails.
 
 | Area | Purpose |
 | --- | --- |
 | Banner | Establishes the child-friendly Bible story setting immediately. |
-| Carousel | Lets teachers or children choose from 50 Sunday school lesson images while only showing 5 at a time. |
-| Resource Rail | Provides left-side links for table of content, copyright, and curriculum notes PDFs. |
-| Lesson Content | Shows the selected lesson title and practical teaching notes. |
+| Feature Artwork | Shows the lesson and feature artwork above the realistic image preview carousel as the visual focus, with the stamp overlayed on the lesson artwork. |
+| Realistic Images Carousel | Shows the resource links beside a supporting carousel below the featured lesson and feature artwork. |
+| Colored Images Carousel | Shows the full-color illustrated carousel below the realistic preview area. |
+| Payment Package Images | Shows the whole-lesson payment package and purchase button after the feature artwork. |
+| Resource Rail | Provides left-side links for table of content, copyright, and curriculum notes sample PDFs. |
 | Footer | Provides a simple brand close for the page. |
 
 # Requirements
 
 - Display one horizontal banner image at the top of the homepage.
-- Provide 50 selectable lesson image entries.
-- Show only 5 lesson images in the carousel viewport on desktop.
+- Provide 50 selectable lesson entries.
+- Reserve the top carousel for future realistic lesson images.
+- Use `public/homepage/images/banner_header.png` as the homepage banner.
+- Display `public/homepage/images/lessons.png` above the realistic carousel.
+- Display `public/homepage/images/features.png` above the realistic carousel.
+- Keep the artwork prominent by sizing both carousel areas smaller and consistently.
+- Label the top carousel as "Realistic Image Previews" with a small heading.
+- Label the lower carousel as "Colored Image Previews" with a small heading.
+- Display the resource links on the left side of the realistic carousel.
+- Keep the colored carousel centered below the realistic preview area.
+- Display `public/homepage/images/300.png` as a centered payment package section for the whole lesson.
+- Display `public/homepage/images/stamp.png` on the whitespace area of `public/homepage/images/lessons.png`.
+- Display an "I Want to Avail These Lessons" purchase button.
+- Use `public/homepage/images/colored` for the bottom colored carousel image cards.
+- Show only 5 lesson images in each carousel viewport on desktop while rendering hidden side cards for smoother swiping.
+- Use one shared background area for both carousel sections.
+- Display carousel thumbnails in an upright portrait ratio that follows the colored image assets.
+- Show a second matching carousel for full-color illustrated images below the realistic carousel.
 - Keep the selected lesson centered and visually larger than the two images on each side.
+- Keep both carousels the same compact size and preserve space around the enlarged active image.
+- Dim inactive carousel cards so the active image is emphasized without being clipped.
 - Highlight carousel lesson images on hover or focus without changing the active lesson.
 - Make clicked lesson images become the active centered carousel display with a left or right sliding animation.
+- Support left and right swipe or drag gestures on carousel tracks to move between lessons.
 - Show left-side links for table of content, copyright, and curriculum notes.
-- Open each left-side link in a modal with an embedded PDF viewer.
-- Show Sunday school lesson content and the selected lesson title below the carousel.
+- Open each left-side link in a modal with an embedded sample PDF viewer.
 - Include a footer.
-- Use a warm brown, Bible-age, cartoon style suitable for children.
 
 # Business Rules
 
 - The selected lesson must be between 1 and 50.
 - Invalid lesson selections fall back to lesson 25.
-- The carousel wraps around lesson boundaries so lesson 1 can show lessons 49 and 50 on the left.
-- A lesson image or numbered selector click updates the active lesson and the `lesson` query parameter.
+- The carousel wraps around lesson boundaries.
+- A lesson image or lesson number click updates both carousels and the `lesson` query parameter.
+- A normal click activates a carousel image; a horizontal drag captures the pointer only after drag intent is clear, then moves the 7-card track inside a clipped 5-card viewport.
+- A short carousel swipe advances one lesson, while a longer drag can jump to the outer visible lesson on that side.
 - Resource links open a PDF modal without leaving the homepage.
 - Pressing Escape or the close button closes the PDF modal.
-- The homepage is public and does not require authentication.
 
 # Technical Design
 
-- `HomeController#show` renders the homepage.
-- `HomePageContentService` owns static lesson data, selected lesson normalization, and visible carousel lesson calculation.
-- `app/views/home/show.html.erb` renders the banner, carousel, lesson content, and footer.
-- `app/assets/images/sunday-school-banner.png` stores the generated raster banner asset.
-- `app/assets/stylesheets/application.css` contains the responsive homepage styling, carousel hover animation, active lesson glow, and reduced-motion fallback.
-- `app/assets/javascripts/home_carousel.js` recenters the five-card carousel around the clicked lesson, updates the lesson title and URL, and keeps link navigation as a no-JavaScript fallback.
-- `ResourceDocumentsController#show` serves inline sample PDF documents.
-- `SampleResourcePdfService` generates simple placeholder PDFs for the modal viewer.
-- No database changes, background jobs, or external APIs are required at runtime.
+- `public/homepage/index.html` contains static markup.
+- `public/homepage/styles.css` contains all homepage styles.
+- `public/homepage/app.js` builds both carousels, synchronizes lesson selection, updates the URL, and generates sample PDF blobs for the modal.
+- `public/homepage/images/banner_header.png` stores the banner asset.
+- `public/homepage/images/features.png` and `public/homepage/images/lessons.png` store artwork displayed above the realistic carousel.
+- `public/homepage/images/300.png` stores the centered whole-lesson payment package artwork.
+- `public/homepage/images/stamp.png` stores the stamp artwork overlayed on the lesson-includes image.
+- The purchase button currently uses a placeholder `#` link until the final checkout URL is available.
+- The realistic carousel currently reuses the colored lesson images because final realistic lesson images are not available yet.
+- `public/homepage/images/colored` stores full-color carousel images using `lesson-<number>-colored.png` filenames.
+- Carousel image frames use a `12 / 17` portrait ratio based on the current colored image dimensions.
+- The current 10 colored images are cycled across all 50 lesson entries in the colored carousel.
+- Rails root redirects to `/homepage/index.html`; the homepage itself does not use Rails helpers, ERB, controllers, or services.
 
 # Flow
 
-1. A visitor opens `/`.
-2. Rails routes the request to `HomeController#show`.
-3. The controller calls `HomePageContentService` with the optional `lesson` parameter.
-4. The service returns all 50 lesson selections, the selected lesson, and the 5 visible carousel lessons.
-5. The view renders the selected lesson in the center with larger styling.
-6. Hovering or focusing a lesson card only highlights it visually.
-7. Clicking a lesson recenters the five-card carousel around that lesson with a left or right slide animation and updates the `lesson` query parameter.
-8. Clicking a resource rail link opens a modal and loads the matching sample PDF in an iframe.
+1. A visitor opens `/homepage/index.html` directly, or opens `/` in Rails and is redirected there.
+2. `app.js` reads the `lesson` query parameter or defaults to lesson 25.
+3. `app.js` builds the realistic and colored carousel sections from static arrays.
+4. The selected lesson renders in the center with larger styling.
+5. Hovering or focusing a lesson card only highlights it visually.
+6. Clicking a lesson image or lesson number recenters both carousels and updates the URL.
+7. Swiping left or right on a carousel track moves one or two lessons based on drag distance and updates both carousels.
+8. Clicking a resource rail link opens a modal and loads a client-generated sample PDF blob in an iframe.
 
 # API
 
-## Endpoint
-
-`GET /`
-
-## Request Examples
+## Endpoints
 
 ```http
 GET /
-GET /?lesson=1
-GET /resource-documents/table-of-content.pdf
+GET /homepage/index.html
+GET /homepage/index.html?lesson=1
 ```
 
-## Response Examples
-
-```http
-200 OK
-```
-
-The homepage response is HTML. Resource document responses are inline PDFs.
+The homepage response is static HTML. Resource PDF samples are generated in the browser.
 
 # Testing
 
-- Controller tests verify the banner, 5 visible carousel cards, 50 selectors, selected lesson content, and invalid lesson fallback.
-- Controller tests verify resource modal hooks and sample PDF responses.
-- Manual testing should confirm responsive layout at desktop and mobile widths, hover highlight behavior, and click-to-active carousel movement.
+- Integration tests verify root redirect and static HTML/CSS/JS file serving.
+- Manual testing should confirm responsive layout, hover highlight behavior, click-to-active carousel movement, full-color lower carousel images, modal PDF viewing, and static extraction.
 
 # Future Improvements
 
-- None currently planned for this feature.
+- Replace placeholder PDF generation with final static PDF files when content is ready.

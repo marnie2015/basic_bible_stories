@@ -10,6 +10,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "home#show"
-  get "resource-documents/:document_key", to: "resource_documents#show", as: :resource_document, defaults: { format: :pdf }
+  root to: redirect("/homepage/index.html")
 end
