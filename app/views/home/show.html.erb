@@ -1,0 +1,101 @@
+<% content_for :title, "Sunday School Bible Stories" %>
+
+<main class="home-page">
+  <section class="storybook-banner" aria-label="Sunday school welcome banner">
+    <%= image_tag "sunday-school-banner.png", alt: @home_page_content.banner_alt_text, class: "storybook-banner__image" %>
+  </section>
+
+  <aside class="resource-rail" aria-label="Sunday school resources">
+    <% @home_page_content.resource_links.each do |resource_link| %>
+      <button class="resource-rail__link"
+              type="button"
+              data-resource-modal-trigger
+              data-resource-title="<%= resource_link.title %>"
+              data-resource-url="<%= resource_document_path(resource_link.key, format: :pdf) %>">
+        <%= resource_link.title %>
+      </button>
+    <% end %>
+  </aside>
+
+  <section class="lesson-carousel" aria-labelledby="lesson-carousel-title" data-lesson-carousel>
+    <div class="lesson-carousel__heading">
+      <p class="lesson-carousel__eyebrow">Choose a story</p>
+      <h1 id="lesson-carousel-title">Sunday School Bible Stories</h1>
+    </div>
+
+    <div class="lesson-carousel__track" aria-label="Bible story lesson image carousel" data-lesson-carousel-track>
+      <% @home_page_content.visible_lessons.each do |lesson| %>
+        <% selected = lesson.number == @home_page_content.selected_lesson.number %>
+        <%= link_to root_path(lesson: lesson.number),
+                    class: ["lesson-card", ("lesson-card--selected" if selected)].compact,
+                    data: { lesson_carousel_card: true, lesson_number: lesson.number },
+                    aria: { current: ("true" if selected), label: "Make lesson #{lesson.number} active: #{lesson.title}" } do %>
+          <span class="lesson-card__image-frame">
+            <%= image_tag "sunday-school-banner.png",
+                          alt: "",
+                          class: "lesson-card__image",
+                          style: "object-position: #{lesson.crop_position};" %>
+          </span>
+          <span class="lesson-card__number">Lesson <%= lesson.number %></span>
+          <span class="lesson-card__title"><%= lesson.title %></span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <nav class="lesson-carousel__selector" aria-label="All 50 lesson selections">
+      <% @home_page_content.lesson_images.each do |lesson| %>
+        <% selected = lesson.number == @home_page_content.selected_lesson.number %>
+        <%= link_to lesson.number,
+                    root_path(lesson: lesson.number),
+                    class: ["lesson-dot", ("lesson-dot--selected" if selected)].compact,
+                    data: { lesson_carousel_selector: true, lesson_number: lesson.number },
+                    aria: { label: "Make lesson #{lesson.number} active: #{lesson.title}", current: ("true" if selected) } %>
+      <% end %>
+    </nav>
+
+    <% lesson_carousel_payload = JSON.generate(
+        lessons: @home_page_content.lesson_images.map { |lesson|
+          {
+            number: lesson.number,
+            title: lesson.title,
+            summary: lesson.summary,
+            cropPosition: lesson.crop_position,
+            imageUrl: asset_path("sunday-school-banner.png"),
+            path: root_path(lesson: lesson.number)
+          }
+        },
+        activeLessonNumber: @home_page_content.selected_lesson.number
+      ) %>
+    <%= tag.div hidden: true, data: { lesson_carousel_data: lesson_carousel_payload } %>
+  </section>
+
+  <section class="lesson-content" aria-labelledby="lesson-title">
+    <p class="lesson-content__kicker">This week's Sunday school lesson</p>
+    <h2 id="lesson-title" data-lesson-title><%= @home_page_content.selected_lesson.title %></h2>
+    <p>
+      Children will hear the story, wonder about God's care, and practice one simple act of faith they can carry into the week.
+      The lesson uses gentle questions, colorful picture prompts, and a short hands-on activity for younger learners.
+    </p>
+    <div class="lesson-content__details" aria-label="Lesson details">
+      <span>Memory truth: God is near and kind.</span>
+      <span>Activity: story retell circle</span>
+      <span>Take-home idea: share one kind word</span>
+    </div>
+  </section>
+</main>
+
+<div class="resource-modal" hidden data-resource-modal>
+  <div class="resource-modal__backdrop" data-resource-modal-close></div>
+  <section class="resource-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="resource-modal-title">
+    <header class="resource-modal__header">
+      <h2 id="resource-modal-title" data-resource-modal-title>Resource</h2>
+      <button class="resource-modal__close" type="button" aria-label="Close resource PDF" data-resource-modal-close>&times;</button>
+    </header>
+    <iframe class="resource-modal__viewer" title="Resource PDF viewer" data-resource-modal-viewer></iframe>
+  </section>
+</div>
+
+<footer class="site-footer">
+  <p>Basic Bible Stories</p>
+  <p>Warm Sunday school lessons for curious kids and caring teachers.</p>
+</footer>
